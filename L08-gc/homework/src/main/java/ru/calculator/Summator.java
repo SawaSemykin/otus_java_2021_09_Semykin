@@ -9,7 +9,7 @@ public class Summator {
     private int prevPrevValue = 0;
     private int sumLastThreeValues = 0;
     private int someValue = 0;
-    private final List<Data> logValues = new ArrayList<>();
+    private final List<Data> listValues = new ArrayList<>();
 
     //!!! сигнатуру метода менять нельзя
     public void calc(Data data) {
