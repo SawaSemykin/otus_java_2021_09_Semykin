@@ -1,5 +1,6 @@
 package ru.otus.reflection;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 
@@ -32,6 +33,14 @@ public class ReflectionHelper {
             var method = object.getClass().getDeclaredMethod(name, toClasses(args));
             method.setAccessible(true);
             return method.invoke(object, args);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Object callMethod(Object object, Method methodToCall, Object... args) {
+        try {
+            return methodToCall.invoke(object, args);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
