@@ -3,4 +3,5 @@ public interface Versions {
     String jmh = "1.33";
     String lombok = "1.18.22";
     String jol = "0.16";
+    String asm = "9.2";
 }
