@@ -3,8 +3,7 @@ package ru.otus.homework;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * @author Aleksandr Semykin
@@ -21,9 +20,23 @@ class Ioc {
 
     static class LoggerInvocationHandler implements InvocationHandler {
         private final TestLogging srcInstance;
+        private final Set<Method> loggedMethods = new HashSet<>();
 
         LoggerInvocationHandler(TestLogging srcInstance) {
             this.srcInstance = srcInstance;
+            Arrays.stream(srcInstance.getClass().getInterfaces())
+                    .flatMap(i -> Arrays.stream(i.getDeclaredMethods()))
+                    .filter(this::isAnnotationPresent)
+                    .forEach(loggedMethods::add);
+        }
+
+        private boolean isAnnotationPresent(Method method) {
+            try {
+                Method methodImpl = srcInstance.getClass().getMethod(method.getName(), method.getParameterTypes());
+                return methodImpl.isAnnotationPresent(Log.class);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
@@ -32,18 +45,12 @@ class Ioc {
             return method.invoke(srcInstance, args);
         }
 
-        private void log(Method method, Object[] args) throws Throwable {
-            Method methodImpl = srcInstance.getClass().getMethod(method.getName(), method.getParameterTypes());
-            if (methodImpl.getAnnotation((Log.class) ) != null) {
-                System.out.print("executed method: " + method.getName());
-                System.out.println(", params: " + Arrays.stream(args).map(this::parseParam).collect(Collectors.joining(", ")));
-            }
-        }
+        private void log(Method method, Object[] args) {
+            if (loggedMethods.contains(method)) {
+                System.out.print("executed method: " + method);
+                System.out.println(", params: " + Arrays.toString(args));
 
-        private String parseParam(Object param) {
-            return System.getProperty("line.separator") +
-                    "[type: " + param.getClass() +
-                    ", value: " + param + "]";
+            }
         }
     }
 }
