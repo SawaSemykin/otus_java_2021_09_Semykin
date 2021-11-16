@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Aleksandr Semykin
@@ -20,14 +21,13 @@ class Ioc {
 
     static class LoggerInvocationHandler implements InvocationHandler {
         private final TestLogging srcInstance;
-        private final Set<Method> loggedMethods = new HashSet<>();
+        private final Set<Method> loggedMethods;
 
         LoggerInvocationHandler(TestLogging srcInstance) {
             this.srcInstance = srcInstance;
-            Arrays.stream(srcInstance.getClass().getInterfaces())
-                    .flatMap(i -> Arrays.stream(i.getDeclaredMethods()))
+            loggedMethods = Arrays.stream(TestLogging.class.getDeclaredMethods())
                     .filter(this::isAnnotationPresent)
-                    .forEach(loggedMethods::add);
+                    .collect(Collectors.toSet());
         }
 
         private boolean isAnnotationPresent(Method method) {
