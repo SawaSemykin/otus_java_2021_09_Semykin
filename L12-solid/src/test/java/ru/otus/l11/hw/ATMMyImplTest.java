@@ -3,19 +3,22 @@ package ru.otus.l11.hw;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.otus.l11.hw.Bill.Value.*;
+import static ru.otus.l11.hw.BillValue.*;
 
 
 class ATMMyImplTest {
     private ATM atm;
+    private CashHolder cashHolder;
 
     @BeforeEach
     void setup() {
-        atm = new ATMMyImpl();
+        cashHolder = Mockito.spy(CashHolder.class);
+        atm = ATMFactory.createATM(cashHolder);
     }
 
     @Test
