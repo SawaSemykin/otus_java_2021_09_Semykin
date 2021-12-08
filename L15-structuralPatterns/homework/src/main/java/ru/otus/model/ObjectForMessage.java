@@ -12,4 +12,11 @@ public class ObjectForMessage {
     public void setData(List<String> data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "ObjectForMessage{" +
+                "data=" + data +
+                '}';
+    }
 }
