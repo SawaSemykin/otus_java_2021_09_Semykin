@@ -1,7 +1,6 @@
 package ru.otus.processor.homework;
 
 import ru.otus.model.Message;
-import ru.otus.model.Messages;
 import ru.otus.processor.Processor;
 
 /**
@@ -19,6 +18,6 @@ public class ProcessorThrowExceptionOnEvenSecond implements Processor {
         if (timeProvider.getDate().getSecond() % 2 == 0) {
             throw new RuntimeException("It's even second");
         }
-        return Messages.copy(message);
+        return new Message(message);
     }
 }

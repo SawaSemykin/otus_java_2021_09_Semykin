@@ -1,5 +1,7 @@
 package ru.otus.model;
 
+import java.util.Optional;
+
 public class Message {
     private final long id;
     private final String field1;
@@ -17,6 +19,14 @@ public class Message {
     private final ObjectForMessage field13;
 
     //todo: 1. Добавить поля field11 - field13 (для field13 используйте класс ObjectForMessage)
+
+    public Message(Message toClone) {
+        this(toClone.getId(), toClone.getField1(), toClone.getField2(),
+                toClone.getField3(), toClone.getField4(), toClone.getField5(),
+                toClone.getField6(), toClone.getField7(), toClone.getField8(),
+                toClone.getField9(), toClone.getField10(), toClone.getField11(), toClone.getField12(),
+                Optional.of(toClone).map(Message::getField13).map(ObjectForMessage::new).orElse(null));
+    }
 
     private Message(long id, String field1, String field2, String field3, String field4, String field5, String field6, String field7, String field8, String field9, String field10,
                     String field11, String field12, ObjectForMessage field13) {
