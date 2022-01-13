@@ -12,43 +12,51 @@ import java.util.stream.Collectors;
  * @author Aleksandr Semykin
  */
 public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
-    private final Class<T> type;
+    private final String name;
+    private final Constructor<T> constructor;
+    private final List<Field> allFields;
+    private final Field idField;
+    private final List<Field> fieldsWithoutId;
 
     public EntityClassMetaDataImpl(Class<T> type) {
-        this.type = type;
-    }
-
-    @Override
-    public String getName() {
-        return type.getSimpleName().toLowerCase();
-    }
-
-    @Override
-    public Constructor<T> getConstructor() {
         try {
-            return type.getDeclaredConstructor();
-        } catch (NoSuchMethodException e) {
+            this.name = type.getSimpleName().toLowerCase();
+            this.constructor = type.getDeclaredConstructor();
+            this.allFields = Arrays.asList(type.getDeclaredFields());
+            this.idField = allFields.stream()
+                    .filter(f -> f.getAnnotation(Id.class) != null)
+                    .findAny()
+                    .orElseThrow();
+            this.fieldsWithoutId = allFields.stream()
+                    .filter(f -> f.getAnnotation(Id.class) == null)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Constructor<T> getConstructor() {
+        return constructor;
+    }
+
+    @Override
     public Field getIdField() {
-        return Arrays.stream(type.getDeclaredFields())
-                .filter(f -> f.getAnnotation(Id.class) != null)
-                .findAny()
-                .orElseThrow();
+        return idField;
     }
 
     @Override
     public List<Field> getAllFields() {
-        return Arrays.asList(type.getDeclaredFields());
+        return allFields;
     }
 
     @Override
     public List<Field> getFieldsWithoutId() {
-        return Arrays.stream(type.getDeclaredFields())
-                .filter(f -> f.getAnnotation(Id.class) == null)
-                .collect(Collectors.toList());
+        return fieldsWithoutId;
     }
 }
