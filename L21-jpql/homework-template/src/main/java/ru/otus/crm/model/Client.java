@@ -20,14 +20,14 @@ public class Client implements Cloneable {
     private String name;
 
     @OneToOne(
-            fetch = FetchType.EAGER, // требуется по услововию тестов
+            fetch = FetchType.EAGER, // требуется по услововию тестов. Лучше LAZY, а инициализировать если нужно в сервисах или репозиториях
             cascade = CascadeType.ALL
     )
     @JoinColumn(name="address_id")
     private Address address;
 
     @OneToMany(
-            fetch = FetchType.EAGER, // требуется по уловию тестов
+            fetch = FetchType.EAGER, // см. выше
             mappedBy = "client",
             cascade = CascadeType.ALL
     )
