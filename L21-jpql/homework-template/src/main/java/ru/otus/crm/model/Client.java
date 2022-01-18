@@ -1,12 +1,11 @@
 package ru.otus.crm.model;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "client")
@@ -19,6 +18,20 @@ public class Client implements Cloneable {
 
     @Column(name = "name")
     private String name;
+
+    @OneToOne(
+            fetch = FetchType.EAGER, // требуется по услововию тестов. Лучше LAZY, а инициализировать если нужно в сервисах или репозиториях
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name="address_id")
+    private Address address;
+
+    @OneToMany(
+            fetch = FetchType.EAGER, // см. выше
+            mappedBy = "client",
+            cascade = CascadeType.ALL
+    )
+    private Collection<Phone> phones = new ArrayList<>();
 
     public Client() {
     }
@@ -33,9 +46,39 @@ public class Client implements Cloneable {
         this.name = name;
     }
 
+    public Client(Long id, String name, Address address, List<Phone> phones) {
+        this(id, name);
+        addAddress(address);
+        phones.forEach(this::addPhone);
+    }
+
+    public void addPhone(Phone phone) {
+        phones.add(phone);
+        phone.setClient(this);
+    }
+
+    public void removePhone(Phone phone) {
+        phones.remove(phone);
+        phone.setClient(null);
+    }
+
+    public void addAddress(Address address) {
+        removeAddress();
+        this.address = address;
+        address.setClient(this);
+    }
+
+    public void removeAddress() {
+        if (address != null) {
+            address.setClient(null);
+            address = null;
+        }
+    }
+
     @Override
     public Client clone() {
-        return new Client(this.id, this.name);
+        List<Phone> phoneCopiesList = phones.stream().map(Phone::new).collect(Collectors.toList());
+        return new Client(this.id, this.name, new Address(address), phoneCopiesList);
     }
 
     public Long getId() {
@@ -52,6 +95,22 @@ public class Client implements Cloneable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public Collection<Phone> getPhones() {
+        return phones;
+    }
+
+    public void setPhones(Collection<Phone> phones) {
+        this.phones = phones;
     }
 
     @Override
