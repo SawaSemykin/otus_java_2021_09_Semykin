@@ -67,7 +67,14 @@ class HomeworkTest {
             session.clear();
 
             var loadedClient = session.find(Client.class, 1L);
-            assertThat(loadedClient).usingRecursiveComparison().isEqualTo(client);
+            assertThat(loadedClient)
+                    .usingRecursiveComparison()
+                    .withComparatorForType(comparing(Address::getId)
+                                    .thenComparing(Address::getStreet),
+                            Address.class)
+                    .withComparatorForType(comparing(Phone::getId)
+                                    .thenComparing(Phone::getNumber), Phone.class)
+                    .isEqualTo(client);
         }
     }
 
