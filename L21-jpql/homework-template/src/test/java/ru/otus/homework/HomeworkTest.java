@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HomeworkTest {
