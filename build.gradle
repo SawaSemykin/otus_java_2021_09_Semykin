@@ -41,7 +41,6 @@ allprojects {
             dependency("org.testcontainers:junit-jupiter:${Versions.testcontainers}")
             dependency("org.testcontainers:postgresql:${Versions.testcontainers}")
             
-            dependency("org.projectlombok:lombok:${Versions.lombok}")
             dependency("com.google.code.gson:gson:${Versions.gson}")
             dependency("com.datastax.oss:java-driver-core:${Versions.cassandra}")
 
