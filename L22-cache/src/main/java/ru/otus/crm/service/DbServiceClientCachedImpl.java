@@ -30,12 +30,12 @@ public class DbServiceClientCachedImpl implements DBServiceClient {
             if (client.getId() == null) {
                 var clientId = dataTemplate.insert(connection, client);
                 var createdClient = new Client(clientId, client.getName());
-                cache.put(String.valueOf(clientId), createdClient);
+                putOrUpdateCache(createdClient);
                 log.info("created client: {}", createdClient);
                 return createdClient;
             }
             dataTemplate.update(connection, client);
-            cache.remove(String.valueOf(client.getId()));
+            putOrUpdateCache(client);
             log.info("updated client: {}", client);
             return client;
         });
@@ -52,7 +52,7 @@ public class DbServiceClientCachedImpl implements DBServiceClient {
                 log.info("client: {}", clientOptional);
                 return clientOptional;
             });
-            client.ifPresent(c -> cache.put(String.valueOf(c.getId()), c));
+            client.ifPresent(this::putOrUpdateCache);
             return client;
         }
     }
@@ -64,5 +64,9 @@ public class DbServiceClientCachedImpl implements DBServiceClient {
             log.info("clientList:{}", clientList);
             return clientList;
        });
+    }
+
+    private void putOrUpdateCache(Client client) {
+        cache.put(String.valueOf(client.getId()), client);
     }
 }

@@ -53,7 +53,13 @@ public class MyCache<K, V> implements HwCache<K, V> {
         for (var ref : listeners) {
             var l = ref.get();
             if (l != null) {
-                l.notify(key, value, action);
+                try {
+                    l.notify(key, value, action);
+                } catch (Exception e) {
+                    // ignore just to let rest of the listeners to be notified
+                }
+            } else {
+                removeListener(null);
             }
         }
     }
