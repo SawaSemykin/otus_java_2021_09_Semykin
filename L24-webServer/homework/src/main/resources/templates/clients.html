@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+    <head>
+        <title>Клиенты</title>
+        <script>
+            function getClientById() {
+                const clientIdTextBox = document.getElementById('clientIdTextBox');
+                const clientDataContainer = document.getElementById('clientDataContainer');
+                const id = clientIdTextBox.value;
+                //fetch('clients?id=' + id)
+                fetch('clients/' + id)
+                    .then(response => response.json())
+                    .then(client => clientDataContainer.innerHTML = JSON.stringify(client, null, 4));
+            }
+
+            function postClient() {
+                const client = new FormData(document.getElementById('client-form'));
+                client.append('name', document.getElementById('name').value);
+                client.append('address', document.getElementById('address').value);
+                client.append('phones', document.getElementById('phones').value);
+
+                fetch('clients', {
+                    method: 'POST',
+                    body: client
+                });
+            }
+        </script>
+    </head>
+
+    <body>
+        <h4>Получить клиента по id</h4>
+        <input type="text" id = "clientIdTextBox" placeholder="Введите id клиента">
+        <button onclick="getClientById()">Получить</button>
+        <pre id = "clientDataContainer"></pre>
+
+        <hr>
+
+        <h4>Создать клиента</h4>
+        <form id="client-form" name="client-form" method="POST">
+            <p>
+                Имя:
+                <input type="text" id="name" name="name" placeholder="Введите имя" ></p>
+            <p>
+                Адрес:
+                <input type="text" id="address" name="address" placeholder="Введите адрес"></p>
+            <p>
+                Телефоны:
+                <input type="text" id="phones" name="phones" placeholder="Введите телефоны через запятую"> <br></p>
+<!--            <button onclick="postClient()">Создать</button>--> <!-- todo как удобно обрабатывать в java? -->
+            <input type="submit" value="Создать">
+        </form>
+
+        <hr>
+
+        <h4>Список клиентов</h4>
+        <table style="width: 400px">
+            <thead>
+                <tr>
+                    <td style="width: 50px">Id</td>
+                    <td style="width: 150px">Имя</td>
+                    <td style="width: 150px">Адрес</td>
+                    <td style="width: 450px">Телефоны</td>
+                </tr>
+            </thead>
+            <tbody>
+                <#list clients as client>
+                    <tr>
+                        <td>${client.id}</td>
+                        <td>${client.name}</td>
+                        <td>${client.address.street}</td>
+                        <td>${client.phones?map(p -> p.number)?join(", ")}</td>
+                    </tr>
+                </#list>
+            </tbody>
+        </table>
+    </body>
+</html>
