@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+dependencies {
+    implementation("ch.qos.logback:logback-classic")
+    implementation("org.hibernate:hibernate-core")
+    implementation('org.flywaydb:flyway-core')
+    implementation("com.google.code.gson:gson:${Versions.gson}")
+
+    implementation("org.postgresql:postgresql")
+
+    implementation("org.eclipse.jetty:jetty-servlet:${Versions.jetty}")
+    implementation("org.eclipse.jetty:jetty-server:${Versions.jetty}")
+    implementation("org.eclipse.jetty:jetty-webapp:${Versions.jetty}")
+    implementation("org.eclipse.jetty:jetty-security:${Versions.jetty}")
+    implementation("org.eclipse.jetty:jetty-http:${Versions.jetty}")
+    implementation("org.eclipse.jetty:jetty-io:${Versions.jetty}")
+    implementation("org.eclipse.jetty:jetty-util:${Versions.jetty}")
+    implementation("org.freemarker:freemarker:${Versions.freemarker}")
+
+    testImplementation("com.h2database:h2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testImplementation("org.assertj:assertj-core")
+    testImplementation("org.mockito:mockito-junit-jupiter")
+
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.with {
+        encoding = 'UTF-8'
+    }
+}
