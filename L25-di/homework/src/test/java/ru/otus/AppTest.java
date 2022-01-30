@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AppTest {
 
-    @Disabled //надо удалить
     @DisplayName("Из контекста тремя способами должен корректно доставаться компонент с проставленными полями")
     @ParameterizedTest(name = "Достаем по: {0}")
     @CsvSource(value = {"GameProcessor, ru.otus.services.GameProcessor",
