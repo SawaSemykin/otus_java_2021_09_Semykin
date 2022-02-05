@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
 
-    private final List<Object> appComponents = new ArrayList<>();
+    private final Map<Class<?>, Object> appComponentsByClass = new HashMap<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
     private final Object appConfig;
 
@@ -41,7 +41,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 .toArray();
         Object component = ReflectionHelper.callMethod(appConfig, method, dependencies);
         appComponentsByName.put(method.getAnnotation(AppComponent.class).name(), component);
-        appComponents.add(component);
+        appComponentsByClass.put(component.getClass(), component);
     }
 
     @Override
@@ -54,8 +54,8 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     }
 
     private Object getAppComponentByInterface(Class<?> componentInterface) {
-        List<Object> componentCandidates = appComponents.stream()
-                .filter(c -> Arrays.stream(c.getClass().getInterfaces()).anyMatch(i -> i == componentInterface))
+        List<Class<?>> componentCandidates = appComponentsByClass.keySet().stream()
+                .filter(k -> Arrays.stream(k.getInterfaces()).anyMatch(i -> i == componentInterface))
                 .collect(Collectors.toList());
         if (componentCandidates.isEmpty()) {
             throw new RuntimeException("Component not found");
@@ -63,14 +63,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         if (componentCandidates.size() > 1) {
             throw new RuntimeException("Found several component candidates matched to parameter type. Use more strict query");
         }
-        return componentCandidates.get(0);
+        return appComponentsByClass.get(componentCandidates.get(0));
     }
 
     private Object getAppComponentByClass(Class<?> componentClass) {
-            return appComponents.stream()
-                    .filter(c -> c.getClass() == componentClass)
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Component not found"));
+        return appComponentsByClass.get(componentClass);
     }
 
     @Override
