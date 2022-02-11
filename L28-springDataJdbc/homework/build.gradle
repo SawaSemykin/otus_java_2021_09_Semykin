@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+dependencies {
+    implementation("ch.qos.logback:logback-classic")
+    implementation('org.flywaydb:flyway-core')
+    implementation("org.postgresql:postgresql")
+    implementation 'com.google.code.findbugs:jsr305'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+test {
+}
+
+tasks.withType(JavaCompile) {
+    options.with {
+        encoding = 'UTF-8'
+    }
+}

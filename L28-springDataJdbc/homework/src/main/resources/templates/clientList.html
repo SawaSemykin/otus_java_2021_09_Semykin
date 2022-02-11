@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all clients</title>
+
+    <script>
+        function getClient(url, valueControlName) {
+            const valueControl = document.getElementById(valueControlName);
+            const clientDataContainer = document.getElementById('clientDataContainer');
+            const fullUrl = url + (valueControl? (encodeURIComponent(valueControl.value)) : '');
+            fetch(fullUrl)
+                .then(response => response.json())
+                .then(client => clientDataContainer.innerHTML = JSON.stringify(client));
+        }
+
+    </script>
+
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .clients, .clients td {
+            border: 1px solid lightgray;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        a {
+            display: block;
+        }
+
+        input {
+            width: 150px;
+        }
+
+
+        select {
+            width: 154px;
+        }
+
+        button {
+            width: 250px;
+        }
+
+        .controls-container {
+            margin-bottom: 5px;
+        }
+
+        .single-button-container {
+            margin-left: 158px;
+        }
+
+        h3 {
+            background-image: url("../static/listmark.png");
+            background-repeat: no-repeat;
+            padding: 2px;
+            padding-left: 30px;
+        }
+    </style>
+
+    <style type="text/css" th:inline="text">
+        [[h3]] {
+            background-image: url([[@{/listmark.png}]]);
+            background-repeat: no-repeat;
+            padding: 2px;
+            padding-left: 30px;
+        }
+
+    </style>
+</head>
+<body>
+<h3>Клиенты:</h3>
+
+<table class="clients">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Phones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="client : ${clients}">
+        <td th:text="${client.id}">1</td>
+        <td th:text="${client.name}">John Doe</td>
+        <td th:text="${client.address.street}">Address</td>
+        <td th:text="${#strings.arrayJoin(client.phones.![number], ', ')}">111-11-11</td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/client/create}" href="clientCreate.html">New client</a>
+
+<br/><br/>
+<h3>API:</h3>
+
+<div class="controls-container">
+    <input type="text" id="clientIdTextBox" value="1" placeholder="Введите id клиента">
+    <button onclick="getClient('/api/client/', 'clientIdTextBox')">Получить клиента по id</button>
+</div>
+<div class="controls-container">
+    <input type="text" id="clientNameTextBox" value="Vasya" placeholder="Введите имя клиента">
+    <button onclick="getClient('/api/client?name=', 'clientNameTextBox')">Получить клиента по имени</button>
+</div>
+
+<pre id="clientDataContainer"></pre>
+
+</body>
+</html>
