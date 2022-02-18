@@ -21,7 +21,7 @@ public class Solution {
     private final static int MIN = 1;
     private final static int MAX = 10;
 
-    Deque<Integer> numbers = new ArrayDeque<>();
+    private final Deque<Integer> numbers = new ArrayDeque<>();
 
     {
         fillNumbers();
@@ -42,7 +42,7 @@ public class Solution {
                     }
                 }
                 this.notifyAll();
-                this.wait();
+                this.wait(1000);
 
                 Thread.sleep(500);
 
