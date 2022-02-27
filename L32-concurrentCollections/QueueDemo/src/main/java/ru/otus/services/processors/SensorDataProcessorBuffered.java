@@ -7,8 +7,8 @@ import ru.otus.api.SensorDataProcessor;
 import ru.otus.api.model.SensorData;
 
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 // Этот класс нужно реализовать
 public class SensorDataProcessorBuffered implements SensorDataProcessor {
@@ -21,7 +21,7 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
     public SensorDataProcessorBuffered(int bufferSize, SensorDataBufferedWriter writer) {
         this.bufferSize = bufferSize;
         this.writer = writer;
-        dataBuffer = new ArrayBlockingQueue<>(bufferSize);
+        dataBuffer = new PriorityBlockingQueue<>(bufferSize, Comparator.comparing(SensorData::getMeasurementTime));
     }
 
     @Override
@@ -37,12 +37,11 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
         }
     }
 
-    public void flush() {
+    public synchronized void flush() {
         try {
             if (!dataBuffer.isEmpty()) {
                 List<SensorData> dataToBeFlushed = new ArrayList<>(bufferSize);
                 dataBuffer.drainTo(dataToBeFlushed);
-                dataToBeFlushed.sort(Comparator.comparing(SensorData::getMeasurementTime));
                 writer.writeBufferedData(dataToBeFlushed);
             }
         } catch (Exception e) {
