@@ -3,9 +3,6 @@ package ru.otus.protobuf.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
-import java.util.concurrent.*;
-
 /**
  * @author Aleksandr Semykin
  */
@@ -13,13 +10,10 @@ public class NumberPrinter {
 
     private static final Logger log = LoggerFactory.getLogger(NumberPrinter.class);
 
-    private final BlockingQueue<Long> queue = new ArrayBlockingQueue<>(1);
+    private volatile long serverValue;
 
     public void onNext(long value) {
-        boolean result = queue.offer(value);
-        if (!result) {
-            log.warn("value: {} has not been added to the queue", value);
-        }
+        serverValue = value;
     }
 
     public void startPrinting() {
@@ -30,7 +24,10 @@ public class NumberPrinter {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            currentValue = currentValue + 1 + Optional.ofNullable(queue.poll()).orElse(0L);
+            synchronized (this) {
+                currentValue = currentValue + 1 + serverValue;
+                serverValue = 0;
+            }
             log.info("currentValue: {}", currentValue);
         }
     }
