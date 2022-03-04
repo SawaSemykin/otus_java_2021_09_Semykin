@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package ru.otus.protobuf.generated;
+
+option java_multiple_files = true;
+
+message NumbersRangeMessage {
+    int64 firstValue = 1;
+    int64 secondValue = 2;
+}
+
+message NumberMessage {
+    int64 value = 1;
+}
+
+message Empty {}
+
+service RemoteNumberGenerator{
+    rpc startGenerating(NumbersRangeMessage) returns (stream NumberMessage);
+}
