@@ -10,9 +10,9 @@ public class NumberPrinter {
 
     private static final Logger log = LoggerFactory.getLogger(NumberPrinter.class);
 
-    private volatile long serverValue;
+    private long serverValue;
 
-    public void onNext(long value) {
+    public synchronized void onNext(long value) {
         serverValue = value;
     }
 
@@ -24,10 +24,8 @@ public class NumberPrinter {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            synchronized (this) {
-                currentValue = currentValue + 1 + serverValue;
-                serverValue = 0;
-            }
+            currentValue = currentValue + 1 + serverValue;
+            serverValue = 0;
             log.info("currentValue: {}", currentValue);
         }
     }
